@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Sparkles, FileText, Download, Upload, RotateCcw, Shield } from 'lucide-react';
+import { Play, Sparkles, Download, Upload, RotateCcw } from 'lucide-react';
 import { AppState } from '../types/cbt';
 
 interface NavbarProps {

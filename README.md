@@ -18,7 +18,8 @@ Aplikasi pembuat ujian **CBT (Computer Based Test)** interaktif modern untuk sek
 - **Tombol "Lompat & Praktekkan":** Membawa pengguna langsung ke modul yang sedang dipelajari dalam aplikasi.
 - **Unduh Rangkuman Panduan:** Berisi lembar rangkuman panduan cepat format Markdown/PDF.
 
-### 2. 📝 Bank Soal 6 Variasi (Standar ANBK & TKA Pusmendik)
+### 2. 📝 Bank Soal 6 Variasi & Rich Text Editor (Dukungan Copas Gambar & LaTeX)
+- **Rich Text Editor Lengkap:** Dukungan salin-tempel gambar langsung dari clipboard (`Ctrl+V` / screenshot), drag-and-drop file gambar, serta tombol format teks tebal, miring, garis bawah, coret, dan kode.
 - **Pilihan Ganda (PG):** 1 jawaban benar dengan opsi acak (*shuffle*).
 - **Pilihan Ganda Kompleks (PGK):** Multi-jawaban benar dengan opsi penilaian parsial.
 - **Benar / Salah (B/S):** Tabel pernyataan dengan kunci evaluasi kebenaran.
@@ -26,7 +27,6 @@ Aplikasi pembuat ujian **CBT (Computer Based Test)** interaktif modern untuk sek
 - **Isian Singkat:** Pencocokan teks jawaban otomatis dengan dukungan banyak kata kunci alternatif (`kunci1|kunci2`).
 - **Uraian / Essay:** Kotak uraian luas untuk evaluasi manual oleh guru.
 - **Formula Matematika KaTeX:** Mendukung penulisan rumus LaTeX pecahan, pangkat, akar kuadrat, integral, matriks, dan simbol Yunani.
-- **Media Stimulus:** Dukungan gambar dari perangkat lokal (*file upload*) maupun tautan URL web.
 
 ### 3. 👥 Manajemen Roster Siswa & Cetak Kartu A4
 - **Dua Metode Autentikasi:**
@@ -43,15 +43,26 @@ Aplikasi pembuat ujian **CBT (Computer Based Test)** interaktif modern untuk sek
 - **Anti-Salin & Anti-Klik Kanan:** Mencegah penyalinan teks soal dan inspeksi elemen.
 - **Blokir Pengerjaan Ulang:** Mencegah siswa mengerjakan ulang setelah menekan tombol selesai.
 
-### 5. 📊 Integrasi Google Sheets Gratis (Google Apps Script)
-- **Tanpa Biaya Hosting Server:** Nilai siswa langsung terkirim ke spreadsheet Google milik sekolah.
-- **Kode GAS Otomatis:** Generator membuatkan kode Google Apps Script siap pakai dengan tombol 1-klik salin.
-- **Panel Pengawas Real-Time:** Monitoring siswa yang sedang aktif, mereset sesi login/nilai yang bermasalah, dan melihat foto kamera pengawas.
+### 5. 👮 Panel Pengawas Tersemat & Analisis Hasil Ujian Selengkap-lengkapnya
+*Panel Pengawas terintegrasi langsung di dalam file HTML yang di-generate (klik tombol "👮 Masuk Panel Pengawas" pada halaman pembuka ujian):*
+- **📡 Monitoring Realtime:** Pantau siswa aktif, belum login, sedang mengerjakan, atau telah selesai; rekam waktu aktif terakhir, progress pengerjaan butir, pelanggaran pindah tab, pratinjau foto webcam pengawas, tombol **Reset Login** dan **Reset Nilai**.
+- **👥 Roster Peserta:** Cetak lembar akun resmi langsung dari peramban.
+- **📊 Analisis Statistik & Psikometrik Selengkap-lengkapnya:**
+  - **Statistik Deskriptif:** Mean, Median, Modus, Nilai Minimum, Nilai Maksimum, Jangkauan (Range), Variansi ($s^2$), Standar Deviasi ($s$), Kuartil 1 ($Q_1$), Kuartil 3 ($Q_3$), Jangkauan Antarkuartil ($IQR$), serta Persentase Kelulusan KKM.
+  - **Histogram Sebaran Nilai:** Grafik batang 10 interval (0-9, 10-19, ..., 90-100).
+  - **Distribusi Mutu Nilai:** Klasifikasi Grade A ($\ge 85$), B (75-84), C (65-74), D (50-64), dan E (<50).
+  - **Komparasi Kinerja per Kelas:** Tabel komparasi mean, median, min, max, std dev, dan % kelulusan tiap kelas.
+  - **Analisis Butir Soal (Item Analysis):** Tingkat kesukaran butir ($P$) berkategori Sukar/Sedang/Mudah, Daya Pembeda ($D$) metode kelompok atas 27% vs bawah 27% (Sangat Baik, Baik, Cukup, Jelek), dan Analisis Efektivitas Pengecoh/Distraktor opsi A, B, C, D.
+  - **Matriks Diagnostik Jawaban Siswa:** Grid interaktif seluruh siswa $\times$ seluruh butir soal dengan status Benar ($✓$), Parsial ($◐$), Salah ($✗$), Kosong ($–$), dan Esai ($●$).
+  - **Daftar Peringkat Nilai:** Peringkat nilai lengkap dengan rincian benar, salah, kosong, pelanggaran layar, dan foto verifikasi.
+  - **Ekspor Dokumen Lengkap:**
+    - 📊 **Excel 5-Sheets (.xlsx):** Sheet 1 Ringkasan Statistik, Sheet 2 Rekap per Kelas, Sheet 3 Analisis Butir Soal, Sheet 4 Matriks Jawaban, Sheet 5 Nilai & Peringkat Siswa.
+    - 📄 **Laporan PDF Resmi:** Desain kop surat formal siap cetak via jsPDF & autoTable.
+    - 📋 **Unduh CSV:** Format UTF-8 standar.
 
-### 6. 🌐 Output File HTML Mandiri & Google Sites
-- Menghasilkan 1 file `.html` mandiri yang berisi seluruh konfigurasi, bank soal, stimulus gambar, dan mesin penilaian.
-- **Offline:** Cukup gandakan file ke komputer laboratorium sekolah tanpa sambungan internet.
-- **Online:** Sematkan (*embed*) kode ke Google Sites gratis sekolah Anda.
+### 6. 🌐 Integrasi Google Sheets Gratis & Publikasi Mandiri
+- **Tanpa Biaya Server:** Nilai dan monitoring siswa tersimpan aman di Google Spreadsheet milik sekolah via Google Apps Script (GAS).
+- **1 File .HTML Mandiri:** Dapat dijalankan offline tanpa internet maupun disematkan online ke Google Sites sekolah.
 
 ---
 

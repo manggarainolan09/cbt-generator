@@ -15,7 +15,6 @@ export const SheetsTab: React.FC<SheetsTabProps> = ({
   onChangeConfig
 }) => {
   const [copied, setCopied] = useState(false);
-  const [testStatus, setTestStatus] = useState<string | null>(null);
   const cfg = state.cfg;
   const gasCode = buildGasCode(cfg);
 
@@ -44,6 +43,21 @@ export const SheetsTab: React.FC<SheetsTabProps> = ({
           <p className="text-xs text-slate-500 mt-1">
             Jawaban dan skor akhir siswa langsung terkirim ke spreadsheet tanpa perlu server sewa berbayar
           </p>
+        </div>
+
+        {/* Proctor Location Notice Card */}
+        <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl flex items-start gap-3">
+          <Shield className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-xs font-bold text-emerald-950">
+              Lokasi Panel Pengawas & Analisis Psikometrik Lengkap
+            </h4>
+            <p className="text-xs text-emerald-800 leading-relaxed">
+              Sesuai desain modular CBT, <b>Panel Pengawas berada langsung di dalam file HTML yang di-generate</b>, bukan di generator ini.
+              Ketika pengawas membuka file HTML ujian di laptopnya, tepat di bawah tombol <i>"Mulai Ujian Sekarang"</i> klik tombol <b>"👮 Masuk Panel Pengawas"</b>.
+              Pengawas dapat memantau pengerjaan langsung (Live Monitoring), foto webcam, reset login, reset nilai, serta mengakses <b>Analisis Psikometrik Selengkap-lengkapnya (Daya Beda, Tingkat Kesukaran, Matriks Jawaban, Ekspor Excel 5-Sheet & PDF)</b>.
+            </p>
+          </div>
         </div>
 
         {/* Endpoint Input */}

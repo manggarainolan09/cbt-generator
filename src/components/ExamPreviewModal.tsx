@@ -190,7 +190,7 @@ export const ExamPreviewModal: React.FC<ExamPreviewModalProps> = ({
             <span className="text-xs font-bold text-white">Simulasi Ujian CBT Interaktif (Tampilan Siswa)</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700">
               <button
                 onClick={() => setDeviceMode('desktop')}
