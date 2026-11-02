@@ -1,11 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   HelpCircle, Plus, Printer, Trash2, ArrowUp, ArrowDown, 
-  Image as ImageIcon, Sparkles, Copy, Eye, Sigma, Check
+  Copy, Eye, Sparkles, Check
 } from 'lucide-react';
 import { AppState, Question, QuestionType } from '../../types/cbt';
 import { printQuestionsPaper } from '../../utils/printUtils';
 import { MathFormulaModal } from '../MathFormulaModal';
+import { RichTextEditor } from '../RichTextEditor';
 
 interface QuestionsTabProps {
   state: AppState;
@@ -57,7 +58,7 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
   };
 
   const handleDeleteQ = (idx: number) => {
-    if (window.confirm('Hapus soal ini?')) {
+    if (window.confirm('Hapus butir soal ini?')) {
       onUpdateQuestions(questions.filter((_, i) => i !== idx));
     }
   };
@@ -77,14 +78,6 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
     next[idx] = next[target];
     next[target] = temp;
     onUpdateQuestions(next);
-  };
-
-  const handleImageUpload = (idx: number, file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      handleUpdateQ(idx, { img: e.target?.result as string });
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleInsertMath = (formula: string) => {
@@ -114,7 +107,7 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
               <span>Kelola Bank Soal & Media</span>
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Tersedia <b>{questions.length}</b> butir soal dalam ujian ini
+              Tersedia <b>{questions.length}</b> butir soal &bull; Editor mendukung <b>copas gambar langsung (Ctrl+V)</b> dan rumus LaTeX
             </p>
           </div>
 
@@ -237,61 +230,24 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                 </div>
               </div>
 
-              {/* Question Text Editor Area */}
+              {/* Rich Text Editor for Question Stem */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700">Teks Pertanyaan / Stimulus:</label>
-                  <button
-                    onClick={() => setActiveMathTarget({ qIdx, field: 'q' })}
-                    className="text-xs text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 transition"
-                  >
-                    <Sigma className="w-3.5 h-3.5" />
-                    <span>Sisipkan Formula LaTeX ($)</span>
-                  </button>
-                </div>
-
-                <textarea
-                  rows={3}
-                  value={q.q}
-                  onChange={(e) => handleUpdateQ(qIdx, { q: e.target.value })}
-                  placeholder="Ketikkan teks soal di sini... (gunakan $rumus$ untuk rumus matematika KaTeX)"
-                  className="w-full p-3.5 text-xs sm:text-sm border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 bg-white leading-relaxed font-sans"
-                />
-
-                {/* Stimulus Image Row */}
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <input
-                    type="text"
-                    value={q.img?.startsWith('data:') ? '(Gambar Terunggah)' : (q.img || '')}
-                    onChange={(e) => handleUpdateQ(qIdx, { img: e.target.value })}
-                    placeholder="URL Tautan Gambar atau Unggah File..."
-                    className="flex-1 min-w-[200px] p-2 text-xs border border-slate-300 rounded-xl bg-slate-50"
-                  />
-                  <label className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer transition flex items-center gap-1">
-                    <ImageIcon className="w-3.5 h-3.5" />
-                    <span>Upload Gambar</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => e.target.files?.[0] && handleImageUpload(qIdx, e.target.files[0])}
-                      className="hidden"
-                    />
+                  <label className="text-xs font-bold text-slate-700">
+                    Teks Pertanyaan / Stimulus (Mendukung Copas Gambar Ctrl+V):
                   </label>
-                  {q.img && (
-                    <button
-                      onClick={() => handleUpdateQ(qIdx, { img: '' })}
-                      className="px-2.5 py-2 text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-bold"
-                    >
-                      Hapus Gambar
-                    </button>
-                  )}
+                  <span className="text-[11px] text-indigo-600 font-medium">
+                    💡 Tips: Tangkap layar dengan Snipping Tool lalu tekan Ctrl+V langsung di dalam kotak
+                  </span>
                 </div>
 
-                {q.img && (
-                  <div className="pt-2">
-                    <img src={q.img} alt="Preview Soal" className="max-h-48 rounded-xl border border-slate-200 object-contain" />
-                  </div>
-                )}
+                <RichTextEditor
+                  value={q.q || ''}
+                  onChange={(val) => handleUpdateQ(qIdx, { q: val })}
+                  placeholder="Tuliskan soal di sini... bisa langsung copas gambar (Ctrl+V), drag-drop foto, atau sisipkan LaTeX"
+                  minHeight="120px"
+                  onOpenLatex={() => setActiveMathTarget({ qIdx, field: 'q' })}
+                />
               </div>
 
               {/* Options & Keys Area based on Question Type */}
@@ -300,42 +256,46 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                 {q.t === 'pg' && (
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 block">
-                      Opsi Pilihan Jawaban (Pilih 1 Tombol Radio sebagai Kunci Jawaban):
+                      Opsi Pilihan Jawaban (Pilih 1 Tombol Radio sebagai Kunci, Mendukung Teks/Gambar):
                     </label>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {q.o?.map((opt, oIdx) => {
                         const isKey = q.a === oIdx;
                         return (
-                          <div key={oIdx} className="flex items-center gap-2.5 bg-slate-50 p-2 rounded-xl border">
+                          <div key={oIdx} className="flex items-start gap-3 bg-slate-50/70 p-3 rounded-2xl border border-slate-200">
                             <input
                               type="radio"
                               name={`key_pg_${qIdx}`}
                               checked={isKey}
                               onChange={() => handleUpdateQ(qIdx, { a: oIdx })}
-                              className="w-4 h-4 text-indigo-600 cursor-pointer"
+                              className="w-4 h-4 text-indigo-600 cursor-pointer mt-3"
                               title="Tandai sebagai kunci jawaban"
                             />
-                            <span className="font-bold text-xs text-indigo-600 w-4">
+                            <span className="font-bold text-xs text-indigo-600 w-5 pt-2.5">
                               {String.fromCharCode(65 + oIdx)}.
                             </span>
-                            <input
-                              type="text"
-                              value={opt}
-                              onChange={(e) => {
-                                const nextO = [...(q.o || [])];
-                                nextO[oIdx] = e.target.value;
-                                handleUpdateQ(qIdx, { o: nextO });
-                              }}
-                              placeholder={`Pilihan ${String.fromCharCode(65 + oIdx)}...`}
-                              className="flex-1 p-2 text-xs border rounded-lg bg-white"
-                            />
+                            <div className="flex-1 min-w-0">
+                              <RichTextEditor
+                                value={opt || ''}
+                                onChange={(val) => {
+                                  const nextO = [...(q.o || [])];
+                                  nextO[oIdx] = val;
+                                  handleUpdateQ(qIdx, { o: nextO });
+                                }}
+                                placeholder={`Teks / gambar pilihan ${String.fromCharCode(65 + oIdx)}... (Bisa copas gambar Ctrl+V)`}
+                                minHeight="42px"
+                                compact={true}
+                                onOpenLatex={() => setActiveMathTarget({ qIdx, field: 'opt', optIdx: oIdx })}
+                              />
+                            </div>
                             <button
                               onClick={() => {
                                 if ((q.o?.length || 0) <= 2) return alert('Minimal 2 pilihan!');
                                 const nextO = q.o?.filter((_, i) => i !== oIdx);
                                 handleUpdateQ(qIdx, { o: nextO, a: 0 });
                               }}
-                              className="text-slate-400 hover:text-rose-500 font-bold px-1"
+                              className="text-slate-400 hover:text-rose-500 font-bold px-1.5 pt-2.5"
+                              title="Hapus pilihan"
                             >
                               &times;
                             </button>
@@ -345,7 +305,7 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                     </div>
                     <button
                       onClick={() => handleUpdateQ(qIdx, { o: [...(q.o || []), ''] })}
-                      className="text-xs text-indigo-600 font-bold hover:underline pt-1"
+                      className="text-xs text-indigo-600 font-bold hover:underline pt-1 block"
                     >
                       + Tambah Opsi Pilihan
                     </button>
@@ -356,14 +316,14 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                 {q.t === 'pgk' && (
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 block">
-                      Opsi Pilihan (Centang Semua Pilihan yang Benar):
+                      Opsi Pilihan (Centang Semua Pilihan yang Benar, Mendukung Copas Gambar):
                     </label>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {q.o?.map((opt, oIdx) => {
                         const correctKeys = (q.a || []) as number[];
                         const isKey = correctKeys.includes(oIdx);
                         return (
-                          <div key={oIdx} className="flex items-center gap-2.5 bg-slate-50 p-2 rounded-xl border">
+                          <div key={oIdx} className="flex items-start gap-3 bg-slate-50/70 p-3 rounded-2xl border border-slate-200">
                             <input
                               type="checkbox"
                               checked={isKey}
@@ -371,30 +331,34 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                                 const nextKeys = isKey ? correctKeys.filter(k => k !== oIdx) : [...correctKeys, oIdx];
                                 handleUpdateQ(qIdx, { a: nextKeys });
                               }}
-                              className="w-4 h-4 text-indigo-600 rounded cursor-pointer"
+                              className="w-4 h-4 text-indigo-600 rounded cursor-pointer mt-3"
                               title="Tandai sebagai kunci benar"
                             />
-                            <span className="font-bold text-xs text-indigo-600 w-4">
+                            <span className="font-bold text-xs text-indigo-600 w-5 pt-2.5">
                               {String.fromCharCode(65 + oIdx)}.
                             </span>
-                            <input
-                              type="text"
-                              value={opt}
-                              onChange={(e) => {
-                                const nextO = [...(q.o || [])];
-                                nextO[oIdx] = e.target.value;
-                                handleUpdateQ(qIdx, { o: nextO });
-                              }}
-                              placeholder={`Pilihan ${String.fromCharCode(65 + oIdx)}...`}
-                              className="flex-1 p-2 text-xs border rounded-lg bg-white"
-                            />
+                            <div className="flex-1 min-w-0">
+                              <RichTextEditor
+                                value={opt || ''}
+                                onChange={(val) => {
+                                  const nextO = [...(q.o || [])];
+                                  nextO[oIdx] = val;
+                                  handleUpdateQ(qIdx, { o: nextO });
+                                }}
+                                placeholder={`Teks / gambar pilihan ${String.fromCharCode(65 + oIdx)}... (Bisa copas gambar Ctrl+V)`}
+                                minHeight="42px"
+                                compact={true}
+                                onOpenLatex={() => setActiveMathTarget({ qIdx, field: 'opt', optIdx: oIdx })}
+                              />
+                            </div>
                             <button
                               onClick={() => {
                                 if ((q.o?.length || 0) <= 2) return alert('Minimal 2 pilihan!');
                                 const nextO = q.o?.filter((_, i) => i !== oIdx);
                                 handleUpdateQ(qIdx, { o: nextO });
                               }}
-                              className="text-slate-400 hover:text-rose-500 font-bold px-1"
+                              className="text-slate-400 hover:text-rose-500 font-bold px-1.5 pt-2.5"
+                              title="Hapus pilihan"
                             >
                               &times;
                             </button>
@@ -404,7 +368,7 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                     </div>
                     <button
                       onClick={() => handleUpdateQ(qIdx, { o: [...(q.o || []), ''] })}
-                      className="text-xs text-indigo-600 font-bold hover:underline pt-1"
+                      className="text-xs text-indigo-600 font-bold hover:underline pt-1 block"
                     >
                       + Tambah Opsi Pilihan
                     </button>
@@ -417,7 +381,7 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                     <label className="text-xs font-bold text-slate-700 block">Daftar Pernyataan & Kunci:</label>
                     <div className="space-y-2">
                       {q.st?.map((st, sIdx) => (
-                        <div key={sIdx} className="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border">
+                        <div key={sIdx} className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border">
                           <input
                             type="text"
                             value={st.s}
@@ -456,7 +420,7 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                     </div>
                     <button
                       onClick={() => handleUpdateQ(qIdx, { st: [...(q.st || []), { s: '', a: true }] })}
-                      className="text-xs text-indigo-600 font-bold hover:underline pt-1"
+                      className="text-xs text-indigo-600 font-bold hover:underline pt-1 block"
                     >
                       + Tambah Pernyataan
                     </button>
@@ -469,7 +433,7 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                     <label className="text-xs font-bold text-slate-700 block">Pasangan Kiri & Kanan:</label>
                     <div className="space-y-2">
                       {q.pairs?.map((pair, pIdx) => (
-                        <div key={pIdx} className="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border">
+                        <div key={pIdx} className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border">
                           <input
                             type="text"
                             value={pair.l}
@@ -508,7 +472,7 @@ export const QuestionsTab: React.FC<QuestionsTabProps> = ({
                     </div>
                     <button
                       onClick={() => handleUpdateQ(qIdx, { pairs: [...(q.pairs || []), { l: '', r: '' }] })}
-                      className="text-xs text-indigo-600 font-bold hover:underline pt-1"
+                      className="text-xs text-indigo-600 font-bold hover:underline pt-1 block"
                     >
                       + Tambah Pasangan
                     </button>
