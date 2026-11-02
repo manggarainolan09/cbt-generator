@@ -1,0 +1,8 @@
+{
+  "name": "Generator CBT Pro & Studio Video Panduan",
+  "description": "Generator aplikasi ujian CBT (Computer Based Test) online & offline interaktif, dilengkapi manajemen bank soal multi-tipe, impor Excel/CSV, proctoring kamera, integrasi Google Sheets, cetak kartu login, dan studio video panduan interaktif.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
