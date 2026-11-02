@@ -389,7 +389,7 @@ function showAdmin(tab){
   document.getElementById('app').innerHTML = '<header class="bg-slate-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-30 shadow-md">' +
     '<div class="flex items-center gap-2"><span class="font-bold text-sm">👮 Panel Pengawas CBT</span><span class="text-xs text-slate-400 hidden sm:inline">&bull; ' + esc(C.title) + '</span></div>' +
     '<div class="flex items-center gap-2 flex-wrap">' +
-      tabs.map(function(t){ return '<button onclick="showAdmin(\'' + t[0] + '\')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ' + (tab === t[0] ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300 hover:text-white') + '">' + t[1] + '</button>'; }).join('') +
+      tabs.map(function(t){ return '<button onclick="showAdmin(&apos;' + t[0] + '&apos;)" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ' + (tab === t[0] ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300 hover:text-white') + '">' + t[1] + '</button>'; }).join('') +
       '<button onclick="adminLogout()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition ml-2">Keluar</button>' +
     '</div></header>' +
     '<main class="p-4 sm:p-6 max-w-7xl w-full mx-auto"><div id="admBody"></div></main>';
@@ -463,7 +463,7 @@ function renderMon(now){
     var idle = r.st === 'Mengerjakan' && r.act && (now - r.act) > 120000;
     var badge = r.st === 'Selesai' ? 'bg-emerald-100 text-emerald-800' : r.st === 'Mengerjakan' ? (idle ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800') : r.st === 'Reset' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600';
     var pct = r.tot ? Math.round(r.ans / r.tot * 100) : 0;
-    var keySafe = String(r.key).replace(/'/g,"\\\\'");
+    var keySafe = esc(r.key);
     body += '<tr class="border-b hover:bg-slate-50/80 transition-colors">' +
       '<td class="p-3 text-center text-slate-400 font-mono">' + (i+1) + '</td>' +
       '<td class="p-3 font-bold text-slate-900 whitespace-nowrap">' + esc(r.name) + '</td>' +
@@ -475,9 +475,9 @@ function renderMon(now){
       '<td class="p-3 text-[11px] whitespace-nowrap text-slate-500">' + (r.act ? Math.max(0, Math.round((now - r.act)/1000)) + ' dtk lalu' : '-') + '</td>' +
       '<td class="p-3 font-black text-center font-mono text-indigo-700">' + (r.st === 'Selesai' ? r.score : '-') + '</td>' +
       '<td class="p-3 whitespace-nowrap text-right space-x-1">' +
-        '<button onclick="admDetail(\'' + keySafe + '\')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Detail</button>' +
-        (r.st === 'Mengerjakan' ? '<button onclick="admResetKey(\'' + keySafe + '\',\'login\')" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold">Reset Login</button>' : '') +
-        (r.st === 'Mengerjakan' || r.st === 'Selesai' ? '<button onclick="admResetKey(\'' + keySafe + '\',\'score\')" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold">Reset Nilai</button>' : '') +
+        '<button onclick="admDetail(&apos;' + keySafe + '&apos;)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Detail</button>' +
+        (r.st === 'Mengerjakan' ? '<button onclick="admResetKey(&apos;' + keySafe + '&apos;,&apos;login&apos;)" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold">Reset Login</button>' : '') +
+        (r.st === 'Mengerjakan' || r.st === 'Selesai' ? '<button onclick="admResetKey(&apos;' + keySafe + '&apos;,&apos;score&apos;)" class="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold">Reset Nilai</button>' : '') +
       '</td></tr>';
   });
   function card(l, v, c, sub){ return '<div class="bg-white border rounded-2xl p-4 shadow-2xs"><div class="text-[10px] uppercase font-bold text-slate-400">' + l + '</div><div class="text-2xl font-black ' + c + ' mt-1">' + v + '</div>' + (sub ? '<div class="text-[10px] text-slate-400 mt-0.5">' + sub + '</div>' : '') + '</div>'; }
@@ -586,7 +586,7 @@ function admMonCSV(){
   (ADM_ROWS_ALL||[]).forEach(function(r){
     lines.push([r.name, r.kelas, r.st, r.ans, r.tot, r.tabs, fmtT(r.login), r.act ? fmtT(r.act) : '-', r.score, r.key]);
   });
-  var csv = '\ufeff' + lines.map(function(l){ return l.map(function(v){ return '"' + String(v==null?'':v).replace(/"/g,'""') + '"'; }).join(','); }).join('\r\n');
+  var csv = '\ufeff' + lines.map(function(l){ return l.map(function(v){ return '"' + String(v==null?'':v).replace(/"/g,'""') + '"'; }).join(','); }).join(String.fromCharCode(13, 10));
   var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
   a.download = 'Monitoring_' + (C.title||'CBT').replace(/[^a-z0-9]/gi,'_') + '.csv'; a.click();
   swalToast('CSV monitoring berhasil diunduh');
@@ -779,7 +779,7 @@ function renderAna(){
 
   var sRows = ord.map(function(x,i){
     var r = x.r, ok = x.s >= C.kkm;
-    return '<tr class="border-b hover:bg-slate-50"><td class="p-3 text-center text-slate-400 font-mono">'+(i+1)+'</td><td class="p-3 font-bold text-slate-900">'+esc(r.name)+'</td><td class="p-3 text-slate-600">'+esc(r.kelas)+'</td><td class="p-3 text-slate-600">'+esc(r.asal||'-')+'</td><td class="p-3 font-black text-indigo-700 font-mono">'+x.s+'</td><td class="p-3 text-center text-emerald-600 font-semibold">'+r.correct+'</td><td class="p-3 text-center text-rose-600 font-semibold">'+r.wrong+'</td><td class="p-3 text-center text-slate-400 font-semibold">'+r.empty+'</td><td class="p-3 text-center '+(Number(r.tabs)>0?'text-rose-600 font-bold':'text-slate-400')+'">'+r.tabs+'</td><td class="p-3 text-center">'+(r.hasp ? '<button onclick="admShowPhoto(\''+esc(r.key)+'\')" class="text-indigo-600 underline font-semibold">Lihat</button>' : '-')+'</td><td class="p-3"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold '+(ok?'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-800')+'">'+(ok?'LULUS':'BELUM LULUS')+'</span></td></tr>';
+    return '<tr class="border-b hover:bg-slate-50"><td class="p-3 text-center text-slate-400 font-mono">'+(i+1)+'</td><td class="p-3 font-bold text-slate-900">'+esc(r.name)+'</td><td class="p-3 text-slate-600">'+esc(r.kelas)+'</td><td class="p-3 text-slate-600">'+esc(r.asal||'-')+'</td><td class="p-3 font-black text-indigo-700 font-mono">'+x.s+'</td><td class="p-3 text-center text-emerald-600 font-semibold">'+r.correct+'</td><td class="p-3 text-center text-rose-600 font-semibold">'+r.wrong+'</td><td class="p-3 text-center text-slate-400 font-semibold">'+r.empty+'</td><td class="p-3 text-center '+(Number(r.tabs)>0?'text-rose-600 font-bold':'text-slate-400')+'">'+r.tabs+'</td><td class="p-3 text-center">'+(r.hasp ? '<button onclick="admShowPhoto(&apos;'+esc(r.key)+'&apos;)" class="text-indigo-600 underline font-semibold">Lihat</button>' : '-')+'</td><td class="p-3"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold '+(ok?'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-800')+'">'+(ok?'LULUS':'BELUM LULUS')+'</span></td></tr>';
   }).join('');
 
   document.getElementById('admBody').innerHTML =
@@ -887,7 +887,7 @@ function admExportCSV(){
   v.rows.slice().sort(function(a,b){ return b.score-a.score; }).forEach(function(r,i){
     lines.push([i+1, r.name, r.kelas, r.asal||'', r.score, r.correct, r.wrong, r.empty, r.tabs, Number(r.score)>=C.kkm?'LULUS':'BELUM LULUS']);
   });
-  var csv = '\ufeff' + lines.map(function(l){ return l.map(function(x){ return '"' + String(x==null?'':x).replace(/"/g,'""') + '"'; }).join(','); }).join('\r\n');
+  var csv = '\ufeff' + lines.map(function(l){ return l.map(function(x){ return '"' + String(x==null?'':x).replace(/"/g,'""') + '"'; }).join(','); }).join(String.fromCharCode(13, 10));
   var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
   a.download = 'Laporan_CBT_' + (C.title||'Ujian').replace(/[^a-z0-9]/gi,'_') + '_' + new Date().toISOString().slice(0,10) + '.csv'; a.click();
   swalToast('File CSV berhasil diunduh');
@@ -1299,12 +1299,36 @@ function returnToHome(){
   showLoginPage('Anda telah menyelesaikan ujian ini.');
 }
 
-window.onload = function(){
-  var saved = load();
-  if(saved && saved.done){ state = saved; showResultPage(); }
-  else if(saved){ state = saved; runExam(); }
-  else { showLoginPage(); }
-};
+function initCBTApp(){
+  try{
+    var saved = load();
+    if(saved && saved.done){
+      if(!saved.scoreResult) saved.scoreResult = { finalScore: 0, correct: 0, wrong: 0, empty: 0 };
+      state = saved;
+      showResultPage();
+    } else if(saved && saved.qOrder && saved.qOrder.length){
+      state = saved;
+      runExam();
+    } else {
+      showLoginPage();
+    }
+  }catch(e){
+    console.error(e);
+    showLoginPage();
+  }
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initCBTApp);
+} else {
+  initCBTApp();
+}
+window.addEventListener('load', function(){
+  var a = document.getElementById('app');
+  if(a && !a.innerHTML.trim()){
+    initCBTApp();
+  }
+});
 <\/script>
 </body>
 </html>`;

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FileCode, Play, Download, Copy, Check, ExternalLink, 
-  AlertTriangle, CheckCircle2, Globe, Sparkles
+  AlertTriangle, CheckCircle2, Globe, Sparkles, Eye
 } from 'lucide-react';
 import { AppState } from '../../types/cbt';
 import { buildCBTHTML } from '../../utils/htmlGenerator';
@@ -18,6 +18,20 @@ export const GenerateTab: React.FC<GenerateTabProps> = ({
   const [outputCode, setOutputCode] = useState('');
   const [copied, setCopied] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  // Automatically generate code on initial load or state changes
+  useEffect(() => {
+    if (state.qs.length && state.cfg.title.trim()) {
+      try {
+        const code = buildCBTHTML(state);
+        setOutputCode(code);
+        const sizeKB = Math.round(code.length / 1024);
+        setStatusMessage(`✅ File CBT Siap (${sizeKB} KB, ${state.qs.length} Butir Soal). Anda dapat langsung mengunduh atau membukanya.`);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [state]);
 
   const validateState = () => {
     if (!state.qs.length) {
@@ -40,7 +54,14 @@ export const GenerateTab: React.FC<GenerateTabProps> = ({
     const code = buildCBTHTML(state);
     setOutputCode(code);
     const sizeKB = Math.round(code.length / 1024);
-    setStatusMessage(`✅ File CBT Berhasil Dibuat! Ukuran file: ${sizeKB} KB (${state.qs.length} Butir Soal).`);
+    setStatusMessage(`✅ File CBT Berhasil Di-regenerate! Ukuran file: ${sizeKB} KB (${state.qs.length} Butir Soal).`);
+  };
+
+  const handleOpenInNewTab = () => {
+    const code = outputCode || buildCBTHTML(state);
+    const blob = new Blob([code], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
   };
 
   const handleDownload = () => {
@@ -104,6 +125,15 @@ export const GenerateTab: React.FC<GenerateTabProps> = ({
           >
             <Download className="w-4 h-4" />
             <span>3. Unduh File .HTML</span>
+          </button>
+
+          <button
+            onClick={handleOpenInNewTab}
+            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs transition flex items-center gap-2 shadow-md shadow-blue-600/20"
+            title="Buka file CBT hasil generate langsung di tab browser baru untuk pengujian cepat"
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span>4. Buka di Tab Baru</span>
           </button>
 
           <button
