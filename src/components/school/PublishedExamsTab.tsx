@@ -13,12 +13,14 @@ import {
   Download,
   PlusCircle,
   MessageCircle,
-  Users
+  Users,
+  BarChart3
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { PublishedExamItem, SchoolAccount } from '../../types/cbt';
 import { apiService } from '../../utils/apiService';
 import { buildCBTHTML } from '../../utils/htmlGenerator';
+import { ExamMonitoringModal } from '../monitoring/ExamMonitoringModal';
 
 interface PublishedExamsTabProps {
   school: SchoolAccount;
@@ -38,6 +40,9 @@ export const PublishedExamsTab: React.FC<PublishedExamsTabProps> = ({
   // QR Modal
   const [qrModalExam, setQrModalExam] = useState<PublishedExamItem | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
+
+  // Monitoring & Analysis Modal
+  const [monitoringExam, setMonitoringExam] = useState<PublishedExamItem | null>(null);
 
   const loadExams = async () => {
     setLoading(true);
@@ -272,10 +277,20 @@ export const PublishedExamsTab: React.FC<PublishedExamsTabProps> = ({
 
                 {/* Action Buttons Row */}
                 <div className="pt-2 border-t border-slate-100 space-y-2">
+                  {/* Primary: Monitoring & Analisis */}
+                  <button
+                    onClick={() => setMonitoringExam(exam)}
+                    className="w-full py-2.5 px-3 bg-gradient-to-r from-purple-700 via-indigo-600 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white rounded-xl text-xs font-black shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-2"
+                    title="Buka panel monitoring dan analisis psikometrik hasil ujian"
+                  >
+                    <BarChart3 className="w-4 h-4 text-purple-200" />
+                    <span>📊 Monitoring & Analisis Ujian</span>
+                  </button>
+
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onOpenExamPlayer(exam.id)}
-                      className="flex-1 py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5"
+                      className="flex-1 py-2 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
                       title="Buka ujian siswa langsung di browser"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -369,6 +384,13 @@ export const PublishedExamsTab: React.FC<PublishedExamsTabProps> = ({
           </div>
         </div>
       )}
+
+      {/* Full Proctor Monitoring & Psychometric Analysis Modal */}
+      <ExamMonitoringModal
+        isOpen={!!monitoringExam}
+        onClose={() => setMonitoringExam(null)}
+        exam={monitoringExam}
+      />
     </div>
   );
 };

@@ -111,11 +111,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => onSelectTab('published')}
               className={`whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                activeTab === 'published' ? 'text-indigo-600 font-bold' : 'hover:text-slate-900'
+                activeTab === 'published' ? 'text-indigo-600 font-bold' : 'hover:text-slate-900 font-semibold text-indigo-700 bg-indigo-50/80 px-2.5 py-1 rounded-lg border border-indigo-200'
               }`}
             >
-              <FolderKanban className="w-4 h-4" />
-              <span>Katalog Terbit</span>
+              <FolderKanban className="w-4 h-4 text-indigo-600" />
+              <span>📊 Monitoring & Ujian Terbit</span>
             </button>
           )}
 
@@ -224,7 +224,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="border-t border-slate-100 bg-slate-50/70 px-4 py-2 overflow-x-auto flex items-center justify-between gap-4 text-xs">
         <div className="flex items-center gap-1.5 shrink-0">
           {[
-            ...(currentUser?.role === 'school' ? [{ id: 'published', label: '📂 Katalog Terbit' }] : []),
+            ...(currentUser?.role === 'school' ? [{ id: 'published', label: '📊 Monitoring & Ujian' }] : []),
             { id: 'guide', label: 'Panduan' },
             { id: 'config', label: '1. Pengaturan' },
             { id: 'students', label: `2. Peserta (${state.students.length})` },

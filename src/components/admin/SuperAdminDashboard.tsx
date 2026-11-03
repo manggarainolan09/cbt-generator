@@ -14,10 +14,12 @@ import {
   AlertTriangle,
   MessageCircle,
   Sliders,
-  Eye
+  Eye,
+  BarChart3
 } from 'lucide-react';
 import { apiService } from '../../utils/apiService';
 import { SchoolAccount, PublishedExamItem, SuperAdminUser } from '../../types/cbt';
+import { ExamMonitoringModal } from '../monitoring/ExamMonitoringModal';
 
 interface SuperAdminDashboardProps {
   user: SuperAdminUser;
@@ -47,6 +49,9 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
   const [rejectingSchool, setRejectingSchool] = useState<SchoolAccount | null>(null);
   const [rejectReason, setRejectReason] = useState('Data pendaftaran dan NPSN belum memenuhi ketentuan verifikasi resmi.');
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Monitoring Exam Modal
+  const [monitoringExam, setMonitoringExam] = useState<PublishedExamItem | null>(null);
 
   // Success alert
   const [notification, setNotification] = useState<string | null>(null);
@@ -561,9 +566,15 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
                     </div>
 
                     <div className="flex items-center justify-between pt-2 border-t border-slate-200 text-xs">
-                      <span className="text-slate-400 text-[10px]">
-                        {new Date(exam.createdAt).toLocaleDateString('id-ID')}
-                      </span>
+                      <button
+                        onClick={() => setMonitoringExam(exam)}
+                        className="inline-flex items-center gap-1 text-purple-700 hover:text-purple-900 font-bold bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg border border-purple-200 transition"
+                        title="Buka panel monitoring dan psikometrik ujian sekolah ini"
+                      >
+                        <BarChart3 className="w-3.5 h-3.5" />
+                        <span>Monitoring & Analisis</span>
+                      </button>
+
                       <a
                         href={`/?exam=${exam.id}`}
                         target="_blank"
@@ -571,7 +582,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
                         className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-bold"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span>Lihat Ujian Siswa</span>
+                        <span>Ujian Siswa</span>
                       </a>
                     </div>
                   </div>
@@ -631,6 +642,13 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Full Proctor Monitoring & Psychometric Analysis Modal */}
+      <ExamMonitoringModal
+        isOpen={!!monitoringExam}
+        onClose={() => setMonitoringExam(null)}
+        exam={monitoringExam}
+      />
     </div>
   );
 };
