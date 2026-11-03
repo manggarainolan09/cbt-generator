@@ -12,7 +12,21 @@ Aplikasi pembuat ujian **CBT (Computer Based Test)** interaktif modern untuk sek
 
 ## 🌟 Fitur Utama
 
-### 1. 🎬 Studio Video Panduan Interaktif
+### 👑 1. Super Admin & Manajemen Registrasi Sekolah
+- **Pusat Kendali Super Admin:** Dashboard nasional untuk memverifikasi pendaftaran sekolah di seluruh Indonesia.
+- **Registrasi Sekolah Baru:** Formulir pendaftaran resmi (Nama Sekolah, NPSN 8-digit, Jenjang SD/SMP/SMA/SMK, Nama Admin/Kepala Sekolah, Email, Sandi, WhatsApp, dan Kota/Kabupaten).
+- **Alur Persetujuan & Penolakan:** Super Admin dapat menyetujui (*Approve*) atau menolak (*Reject*) dengan catatan alasan.
+- **Proteksi Akses (Gate Access):** Sekolah yang berstatus *Pending* melihat layar peninjauan ramah; sekolah hanya dapat login dan mengakses generator setelah disetujui.
+- **Monitoring Ujian Terbit Nasional:** Super Admin dapat memantau seluruh paket CBT yang diterbitkan oleh sekolah-sekolah secara online.
+
+### 🚀 2. Sekolah Buat CBT & Langsung Terbitkan (Publish Online)
+- **1-Klik Publish Online:** Sekolah dapat menerbitkan ujian langsung ke cloud/server portal tanpa hosting tambahan.
+- **Tautan Siswa Langsung:** Menghasilkan URL ujian unik (contoh: `/?exam=CBT-SD-XXXX`) yang siap dikerjakan siswa di peramban apapun.
+- **QR Code Interaktif:** Menghasilkan kode QR resolusi tinggi yang dapat diunduh atau dicetak untuk ditempel di ruang kelas.
+- **Katalog Ujian Terbit (Published Exams):** Daftar seluruh CBT yang dipublikasikan sekolah dengan kendali sakelar Buka/Tutup pengerjaan ujian kapan saja.
+- **Player Ujian Siswa Live:** Pengalaman ujian CBT responsif dengan navigasi butir, timer countdown, kamera pengawas, dan penilaian instan.
+
+### 3. 🎬 Studio Video Panduan Interaktif
 - **Pemutar Video Tutorial HD:** 6 bab materi terstruktur dari konfigurasi hingga publikasi file.
 - **Suara Narasi Bahasa Indonesia:** Dilengkapi narasi suara otomatis (*Text-to-Speech*) dan takarir teks (*Closed Captions / CC*).
 - **Tombol "Lompat & Praktekkan":** Membawa pengguna langsung ke modul yang sedang dipelajari dalam aplikasi.

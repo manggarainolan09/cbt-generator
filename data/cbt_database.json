@@ -1,0 +1,67 @@
+{
+  "superAdmins": [
+    {
+      "id": "sa-1",
+      "name": "Super Admin Pusat",
+      "email": "superadmin@cbt.id",
+      "password": "SuperAdmin2026!",
+      "role": "superadmin"
+    },
+    {
+      "id": "sa-2",
+      "name": "Admin Belajar",
+      "email": "kamaludin91@admin.sd.belajar.id",
+      "password": "Admin12345!",
+      "role": "superadmin"
+    }
+  ],
+  "schools": [
+    {
+      "id": "sch-mw0fzf8fdxiy",
+      "name": "SMA Nusantara 1",
+      "npsn": "20309999",
+      "level": "SMA",
+      "adminName": "Budi Santoso",
+      "email": "sma@nusantara.id",
+      "password": "Password123",
+      "phone": "081299998888",
+      "city": "Surabaya",
+      "address": "Jl. Pahlawan",
+      "status": "approved",
+      "createdAt": "2026-11-03T08:44:51.807Z",
+      "updatedAt": "2026-11-03T08:44:59.659Z"
+    },
+    {
+      "id": "sch-101",
+      "name": "SDN 01 Percontohan Merdeka",
+      "npsn": "20104567",
+      "level": "SD",
+      "adminName": "Drs. H. Mulyadi, M.Pd.",
+      "email": "sdn01merdeka@sekolah.id",
+      "password": "Sekolah123!",
+      "phone": "081234567890",
+      "city": "Jakarta Pusat",
+      "address": "Jl. Merdeka Sejahtera No. 12",
+      "status": "approved",
+      "createdAt": "2026-10-27T08:44:40.127Z",
+      "updatedAt": "2026-11-03T08:44:40.128Z"
+    },
+    {
+      "id": "sch-102",
+      "name": "SMP Negeri 5 Harapan Bangsa",
+      "npsn": "20208899",
+      "level": "SMP",
+      "adminName": "Siti Rahmawati, S.Pd.",
+      "email": "smpn5harapan@sekolah.id",
+      "password": "Sekolah123!",
+      "phone": "085712345678",
+      "city": "Bandung",
+      "address": "Jl. Surya Kencana No. 45",
+      "status": "pending",
+      "createdAt": "2026-11-01T08:44:40.128Z",
+      "updatedAt": "2026-11-03T08:44:40.128Z"
+    }
+  ],
+  "publishedExams": [],
+  "submissions": []
+}

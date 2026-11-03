@@ -7,15 +7,42 @@ import { QuestionsTab } from './components/tabs/QuestionsTab';
 import { QuickImportTab } from './components/tabs/QuickImportTab';
 import { SheetsTab } from './components/tabs/SheetsTab';
 import { GenerateTab } from './components/tabs/GenerateTab';
+import { PublishedExamsTab } from './components/school/PublishedExamsTab';
+import { SuperAdminDashboard } from './components/admin/SuperAdminDashboard';
+import { AuthPage } from './components/auth/AuthPage';
+import { StudentExamPlayer } from './components/student/StudentExamPlayer';
 import { VideoTutorialModal } from './components/VideoTutorialModal';
 import { ExamPreviewModal } from './components/ExamPreviewModal';
 import { QuestionPreviewModal } from './components/QuestionPreviewModal';
-import { AppState, ExamConfig, Question, Student } from './types/cbt';
+import { AppState, ExamConfig, Question, Student, AuthUser, SchoolAccount, SuperAdminUser } from './types/cbt';
 import { getSampleSDData } from './data/sampleExam';
+import { apiService } from './utils/apiService';
 
 const STORAGE_KEY = 'cbt_generator_pro_state_v1';
 
 export default function App() {
+  // Check URL param for ?exam=ID
+  const [examParamId, setExamParamId] = useState<string | null>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('exam');
+    } catch (e) {
+      return null;
+    }
+  });
+
+  // Auth state
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
+    return apiService.getCurrentUser();
+  });
+
+  // If superadmin chooses to switch to the generator view
+  const [adminViewingGenerator, setAdminViewingGenerator] = useState(false);
+
+  // If testing or viewing student exam from dashboard
+  const [viewingStudentExamId, setViewingStudentExamId] = useState<string | null>(null);
+
+  // CBT Generator form state
   const [state, setState] = useState<AppState>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -28,7 +55,7 @@ export default function App() {
     return getSampleSDData();
   });
 
-  const [activeTab, setActiveTab] = useState<string>('guide');
+  const [activeTab, setActiveTab] = useState<string>('published');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isExamPreviewOpen, setIsExamPreviewOpen] = useState(false);
   const [previewQIndex, setPreviewQIndex] = useState<number | null>(null);
@@ -54,6 +81,29 @@ export default function App() {
       });
     }
   }, [activeTab]);
+
+  const handleLoginSuccess = (user: AuthUser) => {
+    setCurrentUser(user);
+    if (user.role === 'school') {
+      // Pre-fill school name in config
+      setState(prev => ({
+        ...prev,
+        cfg: {
+          ...prev.cfg,
+          school: user.name,
+          ministry: `Dinas Pendidikan - Jenjang ${user.level}`
+        }
+      }));
+      setActiveTab('published');
+    }
+  };
+
+  const handleLogout = () => {
+    apiService.setCurrentUser(null);
+    setCurrentUser(null);
+    setAdminViewingGenerator(false);
+    setViewingStudentExamId(null);
+  };
 
   const handleUpdateConfig = (patch: Partial<ExamConfig>) => {
     setState(prev => ({
@@ -96,7 +146,7 @@ export default function App() {
       const emptyState: AppState = {
         cfg: {
           title: 'Asesmen Ujian Baru',
-          school: 'Nama Sekolah',
+          school: currentUser?.role === 'school' ? currentUser.name : 'Nama Sekolah',
           subject: 'Mata Pelajaran',
           duration: 60,
           kkm: 70,
@@ -171,22 +221,82 @@ export default function App() {
     input.click();
   };
 
+  // =========================================================================
+  // CASE 1: Student Exam Player (Opened via ?exam=ID or "Buka Ujian Siswa")
+  // =========================================================================
+  const activeExamId = examParamId || viewingStudentExamId;
+  if (activeExamId) {
+    return (
+      <StudentExamPlayer
+        examId={activeExamId}
+        onExit={() => {
+          if (examParamId) {
+            window.history.replaceState({}, '', window.location.pathname);
+            setExamParamId(null);
+          }
+          setViewingStudentExamId(null);
+        }}
+      />
+    );
+  }
+
+  // =========================================================================
+  // CASE 2: Not logged in -> Show Login & School Registration Page
+  // =========================================================================
+  if (!currentUser) {
+    return <AuthPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // =========================================================================
+  // CASE 3: Super Admin logged in
+  // =========================================================================
+  if (currentUser.role === 'superadmin' && !adminViewingGenerator) {
+    return (
+      <SuperAdminDashboard
+        user={currentUser as SuperAdminUser}
+        onLogout={handleLogout}
+        onOpenGenerator={() => setAdminViewingGenerator(true)}
+      />
+    );
+  }
+
+  // =========================================================================
+  // CASE 4: School logged in (OR Super Admin testing the generator)
+  // =========================================================================
+  const schoolUser = currentUser.role === 'school' ? (currentUser as SchoolAccount) : null;
+
   return (
     <div className="min-h-screen bg-slate-50/70 text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
       {/* Top Navigation */}
       <Navbar
         state={state}
         activeTab={activeTab}
+        currentUser={currentUser}
         onSelectTab={setActiveTab}
         onOpenVideoTutorial={() => setIsVideoModalOpen(true)}
         onLoadSample={handleLoadSample}
         onReset={handleReset}
         onExportJSON={handleExportJSON}
         onImportJSON={handleImportJSON}
+        onLogout={handleLogout}
+        onOpenAdminDashboard={
+          currentUser.role === 'superadmin'
+            ? () => setAdminViewingGenerator(false)
+            : undefined
+        }
       />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Published Exams Tab for School */}
+        {activeTab === 'published' && schoolUser && (
+          <PublishedExamsTab
+            school={schoolUser}
+            onOpenCreateExam={() => setActiveTab('config')}
+            onOpenExamPlayer={(id) => setViewingStudentExamId(id)}
+          />
+        )}
+
         {activeTab === 'guide' && (
           <GuideTab
             state={state}
@@ -236,7 +346,9 @@ export default function App() {
         {activeTab === 'generate' && (
           <GenerateTab
             state={state}
+            schoolUser={schoolUser}
             onOpenExamPreview={() => setIsExamPreviewOpen(true)}
+            onOpenExamPlayer={(id) => setViewingStudentExamId(id)}
           />
         )}
       </main>
@@ -244,16 +356,19 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span>&copy; {new Date().getFullYear()} Generator CBT Pro &bull; Aplikasi Asesmen Mandiri Sekolah</span>
+          <span>&copy; {new Date().getFullYear()} Generator CBT Pro &bull; Portal Resmi Ujian Sekolah Berbasis Komputer</span>
           <div className="flex items-center gap-4 text-slate-600 font-medium">
             <button onClick={() => setIsVideoModalOpen(true)} className="hover:text-indigo-600 transition">
               Video Panduan
             </button>
             <button onClick={() => setActiveTab('guide')} className="hover:text-indigo-600 transition">
-              Petunjuk Penggunaan
+              Petunjuk Alur
             </button>
             <button onClick={() => setActiveTab('generate')} className="hover:text-indigo-600 transition">
-              Publikasi Google Sites
+              Terbitkan Ujian
+            </button>
+            <button onClick={handleLogout} className="text-rose-600 hover:text-rose-700 transition">
+              Logout
             </button>
           </div>
         </div>

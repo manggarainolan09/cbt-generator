@@ -84,3 +84,50 @@ export interface VideoChapter {
   screenType: 'overview' | 'config' | 'students' | 'questions' | 'sheets' | 'generate' | 'studentExam' | 'proctor';
   highlights: string[];
 }
+
+export interface SchoolAccount {
+  id: string;
+  name: string;
+  npsn: string;
+  level: string;
+  adminName: string;
+  email: string;
+  phone: string;
+  city: string;
+  address: string;
+  status: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface SuperAdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'superadmin';
+}
+
+export type AuthUser =
+  | (SuperAdminUser & { role: 'superadmin' })
+  | (SchoolAccount & { role: 'school' });
+
+export interface PublishedExamItem {
+  id: string;
+  schoolId: string;
+  schoolName: string;
+  title: string;
+  subject: string;
+  duration: number;
+  kkm: number;
+  token?: string;
+  questionCount: number;
+  studentAuthMode: string;
+  isPublished: boolean;
+  isOpen: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  submissionCount?: number;
+  examData?: AppState;
+}
+
